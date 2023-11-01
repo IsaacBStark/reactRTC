@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import Shell from "./components/layout/Shell.jsx";
+import Navbar from "./components/layout/Navbar.jsx";
 
 export default function App() {
-    const [clicked, setClicked] = useState(false);
-    return <button onClick={() => setClicked(!clicked)}>{clicked ? 'Unclick me' : 'Click me'}</button>
+    return (
+        <Shell>
+            <Navbar />
+        </Shell>
+    );
 }

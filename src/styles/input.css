@@ -2,12 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    @font-face {
+        font-family: 'Inter';
+        src: url('./fonts/InterTight-VariableFont_wght.ttf') format('truetype-variations');
+        font-weight: 100 900;
+    }
+}
+
 html,
 body,
 #root {
     height: 100%;
 }
 
-#root {
-    @apply flex justify-center items-center text-red-500;
+html {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
 }

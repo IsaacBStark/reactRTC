@@ -13,5 +13,13 @@
                 }
             }
         ]
+    ],
+    "plugins": [
+        [
+            "@babel/plugin-transform-react-jsx",
+            {
+                "runtime": "automatic"
+            }
+        ]
     ]
 }
