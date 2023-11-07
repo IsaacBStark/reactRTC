@@ -14,7 +14,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                use: ["style-loader", "css-loader", "postcss-loader"]
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
@@ -39,8 +39,6 @@ module.exports = {
         },
         compress: true,
         port: 3000,
-        liveReload: true,
-        hot: true,
     },
     plugins: [new webpack.HotModuleReplacementPlugin()],
     optimization: {

@@ -17,8 +17,8 @@ export default function Navbar() {
     return (
         <nav className='bg-gray-200 h-20 flex justify-center items-center'>
             <ul className='flex justify-between w-1/4'>
-                {links.map((e) => {
-                    return <li><a href={e.link}>{e.title}</a></li>
+                {links.map((e, i) => {
+                    return <li key={i}><a href={e.link}>{e.title}</a></li>
                 })}
             </ul>
         </nav>
