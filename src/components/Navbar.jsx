@@ -1,3 +1,5 @@
+import { Tabs, Tab } from "@nextui-org/react";
+
 export default function Navbar() {
     const links = [
         {
@@ -15,12 +17,12 @@ export default function Navbar() {
     ]
 
     return (
-        <nav className='bg-gray-200 h-20 flex justify-center items-center'>
-            <ul className='flex justify-between w-1/4'>
-                {links.map((e, i) => {
-                    return <li key={i}><a href={e.link}>{e.title}</a></li>
-                })}
-            </ul>
-        </nav>
+        <div className='flex justify-center'>
+            <Tabs items={links} size='lg'>
+                {(link) => (
+                    <Tab key={link.title} title={link.title}></Tab>
+                )}
+            </Tabs>
+        </div>
     );
 }
