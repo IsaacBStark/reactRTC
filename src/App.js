@@ -27,31 +27,51 @@ const analytics = getAnalytics(app);
 
 const servers = {
     iceServers: [
-      {
-        urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'], // free stun server
-      },
+        {
+            urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'], // free stun server
+        },
     ],
     iceCandidatePoolSize: 10,
 };
 
 // global states
 const pc = new RTCPeerConnection(servers);
-let localStream = null; 
-let remoteStream = null 
 
 export default function App() {
     const [playing, setPlaying] = useState(true);
-    const [source, setSource] = useState();
+    const [localStream, setLocalStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null);
 
     function handleClick(e) {
         setPlaying(!playing)
     }
 
+    useEffect(async () => {
+        async function getCam() {
+            setLocalStream(await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: { facingMode: 'user' },
+            })
+            )
+        }
+        getCam();
+
+        await localStream.getTracks.forEach(track => pc.addTrack(track, localStream))
+        pc.ontrack = (e) => {
+            e.streams[0].getTracks(track => remoteStream.addTrack(track))
+        }
+
+        async function getRemote() {
+            setRemoteStream(new MediaStream())
+        }
+        getRemote();
+    }, [])
+
     return (
         <Shell>
             <Navbar />
             <div className='w-full h-full flex items-center p-64'>
-                {playing && <Video onClick={handleClick} source={source} setSource={setSource}></Video>}
+                {playing && <Video onClick={handleClick} source={localStream}></Video>}
                 {!playing && <div
                     className='
                 w-96
@@ -65,35 +85,26 @@ export default function App() {
                 font-bold
                 rounded-full'
                     onClick={handleClick}>Video Muted</div>}
+                <Video source={remoteStream}></Video>
             </div>
         </Shell>
     );
 }
 
-export const Video = ({ onClick, source, setSource }) => {
-    const sourceRef = useRef();
+function Video({ onClick, source }) {
+    const sourceRef = useRef(source);
 
     useEffect(() => {
-        sourceRef.current = source;
-    }, [source])
-
-    useEffect(() => {
-        let stream;
-        async function getCam() {
-            stream = await navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: { facingMode: 'user' },
-            })
-            setSource(stream);
-        }
-        getCam();
-
         return function cleanup() {
             sourceRef.current.getTracks().forEach(track => {
                 track.stop();
             });
         }
     }, [])
+
+    useEffect(() => {
+        sourceRef.current = source;
+    }, [source])
 
     const refVideo = useCallback(
         (video) => {
