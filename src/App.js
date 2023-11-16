@@ -46,7 +46,7 @@ export default function App() {
         setPlaying(!playing)
     }
 
-    useEffect(async () => {
+    useEffect(() => {
         async function getCam() {
             setLocalStream(await navigator.mediaDevices.getUserMedia({
                 audio: true,
@@ -56,16 +56,27 @@ export default function App() {
         }
         getCam();
 
-        await localStream.getTracks.forEach(track => pc.addTrack(track, localStream))
-        pc.ontrack = (e) => {
-            e.streams[0].getTracks(track => remoteStream.addTrack(track))
-        }
-
         async function getRemote() {
             setRemoteStream(new MediaStream())
         }
         getRemote();
     }, [])
+
+    localStream && localStream.getTracks().forEach((track) => {
+        console.log(pc.getSenders())
+        if (!pc.getSenders().forEach((sender) => {
+            sender.track === track;
+        })) {
+            pc.addTrack(track, localStream)
+        }
+    })
+    if (!pc.ontrack) {
+        pc.ontrack = event => {
+            event.streams[0].getTracks(track => {
+                remoteStream.addTrack(track)
+            })
+        }
+    }
 
     return (
         <Shell>

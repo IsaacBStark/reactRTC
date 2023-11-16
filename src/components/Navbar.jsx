@@ -18,7 +18,7 @@ export default function Navbar() {
 
     return (
         <div className='flex justify-center'>
-            <Tabs items={links} size='lg' variant='underlined' color='secondary'>
+            <Tabs items={links} size='lg' variant='light' color='secondary'>
                 {(link) => (
                     <Tab key={link.title} title={link.title}></Tab>
                 )}

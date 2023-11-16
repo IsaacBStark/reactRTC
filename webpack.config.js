@@ -33,6 +33,7 @@ module.exports = {
     filename: "bundle.js",
     clean: true,
   },
+  devtool: 'inline-source-map',
   devServer: {
     static: {
       directory: path.join(__dirname, "public"),
@@ -43,5 +44,6 @@ module.exports = {
   plugins: [new webpack.HotModuleReplacementPlugin()],
   optimization: {
     mangleExports: "size",
+    minimize: true,
   },
 };
