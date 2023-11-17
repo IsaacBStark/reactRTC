@@ -1,6 +1,7 @@
 import Shell from "./components/Shell.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { RiMicFill, RiMicOffFill, RiPhoneFill } from "react-icons/ri";
 
 
 // Import the functions you need from the SDKs you need
@@ -38,12 +39,21 @@ const servers = {
 const pc = new RTCPeerConnection(servers);
 
 export default function App() {
-    const [playing, setPlaying] = useState(true);
     const [localStream, setLocalStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
+    const [muted, setMuted] = useState(false);
+    1
+    function handleVideoClick(source) {
+        source.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+        })
+    }
 
-    function handleClick(e) {
-        setPlaying(!playing)
+    function handleAudioClick(source) {
+        setMuted(!muted);
+        source.getAudioTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+        })
     }
 
     useEffect(() => {
@@ -62,47 +72,40 @@ export default function App() {
         getRemote();
     }, [])
 
-    localStream && localStream.getTracks().forEach((track) => {
-        console.log(pc.getSenders())
-        if (!pc.getSenders().forEach((sender) => {
-            sender.track === track;
-        })) {
-            pc.addTrack(track, localStream)
-        }
-    })
-    if (!pc.ontrack) {
+    useEffect(() => {
+        localStream && localStream.getTracks().forEach((track) => {
+                pc.addTrack(track, localStream)
+        })
         pc.ontrack = event => {
             event.streams[0].getTracks(track => {
                 remoteStream.addTrack(track)
             })
         }
-    }
+    }, [localStream])
+
+
 
     return (
         <Shell>
-            <Navbar />
-            <div className='w-full h-full flex items-center p-64'>
-                {playing && <Video onClick={handleClick} source={localStream}></Video>}
-                {!playing && <div
-                    className='
-                w-96
-                aspect-square
-                bg-black
-                flex
-                items-center
-                justify-center
-                text-white
-                text-lg
-                font-bold
-                rounded-full'
-                    onClick={handleClick}>Video Muted</div>}
-                <Video source={remoteStream}></Video>
+            <div className='w-full flex grow items-center'>
+                <div className='flex flex-col items-center gap-4 px-4 py-8 bg-gray-100 shadow-inner'>
+                    <Video onClick={() => handleVideoClick(localStream)} source={localStream} className='w-96 aspect-square rounded-full object-cover overflow-hidden shadow-lg hover:scale-[105%] active:scale-100 transition-transform' />
+                    <button className="aspect-square w-fit flex items-center justify-center p-4 rounded-full bg-red-500 shadow-md hover:scale-110 active:scale-100 transition-transform" onClick={() => handleAudioClick(localStream)}>
+                        {!muted ? <RiMicFill color='white' size='2em' /> : <RiMicOffFill color='white' size='2em' />}
+                    </button>
+                </div>
+                <div className='flex flex-col items-center gap-4 px-4 py-8 bg-gray-100 shadow-inner'>
+                    <Video source={remoteStream} className='w-96 aspect-square rounded-full object-cover overflow-hidden shadow-lg' />
+                    <button className="aspect-square w-fit flex items-center justify-center p-4 rounded-full bg-white shadow-md hover:scale-110 active:scale-100 transition-transform">
+                        <RiPhoneFill color='rgb(239 68 68)' size='2em' style = {{transform: 'rotate(135deg)' }}/>
+                    </button>
+                </div>
             </div>
         </Shell>
     );
 }
 
-function Video({ onClick, source }) {
+function Video({ onClick, source, className }) {
     const sourceRef = useRef(source);
 
     useEffect(() => {
@@ -123,5 +126,5 @@ function Video({ onClick, source }) {
         },
         [source],
     );
-    return <video ref={refVideo} autoPlay={true} onClick={onClick} className='w-96 aspect-square rounded-full object-cover overflow-hidden' />;
+    return <video ref={refVideo} autoPlay={true} onClick={onClick} className={className}/>;
 };

@@ -9,19 +9,23 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /(node_modules)/,
+        include: path.resolve(__dirname, 'src'),
         loader: "babel-loader",
         options: { presets: ["@babel/preset-env"] },
       },
       {
         test: /\.css$/,
+        include: path.resolve(__dirname, 'src'),
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
+        include: path.resolve(__dirname, 'src'),
         type: "asset/resource",
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        include: path.resolve(__dirname, 'src'),
         type: "asset/resource",
       },
     ],
@@ -38,12 +42,12 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "public"),
     },
-    compress: true,
+    compress: false,
     port: 3000,
   },
   plugins: [new webpack.HotModuleReplacementPlugin()],
-  optimization: {
-    mangleExports: "size",
-    minimize: true,
-  },
+  // optimization: {
+  //   mangleExports: "size",
+  //   minimize: true,
+  // },
 };
