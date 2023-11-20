@@ -10,9 +10,14 @@
     }
 }
 
+* {
+    transition: background-color 0.3s;
+}
+
 html,
 body,
-#root {
+#root,
+[data-overlay-container] {
     @apply h-full;
 }
 
