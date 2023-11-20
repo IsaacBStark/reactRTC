@@ -1,17 +1,9 @@
 import Shell from "./components/Shell.jsx";
-import Navbar from "./components/Navbar.jsx";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { RiMicFill, RiMicOffFill, RiPhoneFill } from "react-icons/ri";
-
-
-// Import the functions you need from the SDKs you need
+import {getFirestore} from 'firebase/firestore';
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyBwtjRg_B-YEG7VgU81DgTX4opF_SO6ERI",
     authDomain: "fir-rtc-cd34d.firebaseapp.com",
@@ -19,12 +11,11 @@ const firebaseConfig = {
     storageBucket: "fir-rtc-cd34d.appspot.com",
     messagingSenderId: "1087318654356",
     appId: "1:1087318654356:web:d18fc9f70b2d42a4c8a381",
-    measurementId: "G-CVL1Z37YBC"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+const firestore = getFirestore(app);
 
 const servers = {
     iceServers: [
