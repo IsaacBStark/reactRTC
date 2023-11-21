@@ -1,7 +1,7 @@
 import Shell from "./components/Shell.jsx";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { RiMicFill, RiMicOffFill, RiPhoneFill } from "react-icons/ri";
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, setDoc, doc, getDoc, updateDoc, query, onSnapshot } from 'firebase/firestore';
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
@@ -56,14 +56,15 @@ export default function App() {
         async function callHandling() {
 
             if (calling && !callNumber) {
-                const callDoc = firestore.collection('calls').doc();
-                const offerCandidates = callDoc.collection('offerCandidates');
-                const answerCandidates = callDoc.collections('answerCandidates');
+                const callId = Math.floor(Math.random() * 9999);
+                setCallNumber(callId);
 
-                //set input value to callDoc.id;
+                const call = setDoc(doc(firestore, `calls/${callId}`), {})
+                const offerCandidates = collection(firestore, `calls/${callId}/offerCandidates`);
+                const answerCandidates = collection(firestore, `calls/${callId}/answerCandidates`);
 
                 pc.onicecandidate = e => {
-                    e.candidate && offerCandidates.add(e.candidate.toJSON());
+                    e.candidate && addDoc(offerCandidates, e.candidate.toJSON());
                 }
 
                 const offerDescription = await pc.createOffer();
@@ -74,29 +75,31 @@ export default function App() {
                     type: offerDescription.type,
                 }
 
-                await callDoc.set({ offer });
+                await setDoc(doc(firestore, `calls/${callId}`), { offer });
 
-                callDoc.onSnapshot(snap => {
+                onSnapshot(query(doc(firestore, `calls/${callId}`)), snap => {
+                    console.log("snap", snap)
                     const data = snap.data();
 
-                    (!pc.currentRemoteDescription && data.answer) && pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+                        (!pc.currentRemoteDescription && data.answer) && pc.setRemoteDescription(new RTCSessionDescription(data.answer));
 
-                    answerCandidates.onSnapshot(snap => {
+                    onSnapshot(answerCandidates ,snap => {
                         snap.docChanges().forEach(change => {
                             change.type === 'added' && pc.addIceCandidate(new RTCIceCandidate(change.doc.data()))
                         })
                     })
                 })
+
             } else if (calling && callNumber) {
-                const callDoc = firestore.collection('calls').doc(callNumber);
-                const offerCandidates = callDoc.collection('offerCandidates');
-                const answerCandidates = callDoc.collections('answerCandidates');
+                const call = doc(firestore, `calls/${callNumber}`)
+                const offerCandidates = collection(firestore, `calls/${callNumber}/offerCandidates`);
+                const answerCandidates = collection(firestore, `calls/${callNumber}/answerCandidates`);
 
                 pc.onicecandidate = e => {
-                    e.candidate && answerCandidates.add(e.candidate.toJSON());
+                    e.candidate && addDoc(answerCandidates, e.candidate.toJSON());
                 }
 
-                const callData = (await callDoc.get()).data();
+                const callData = (await getDoc(call)).data();
 
                 const offerDescription = callData.offer;
                 await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
@@ -109,9 +112,9 @@ export default function App() {
                     type: answerDescription.type,
                 }
 
-                await callDoc.update({ answer });
+                await updateDoc(call, { answer });
 
-                offerCandidates.onSnapshot(snap => {
+                onSnapshot(offerCandidates, snap => {
                     snap.docChanges().forEach(change => {
                         change.type === 'added' && pc.addIceCandidate(new RTCIceCandidate(change.doc.data()))
                     })
