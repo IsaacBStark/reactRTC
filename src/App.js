@@ -30,24 +30,34 @@ const firestore = getFirestore(app);
 const servers = {
   iceServers: [
     {
-      urls: "turn:a.relay.metered.ca:80",
-      username: "8ccd5fdaa7a9c88887a05445",
-      credential: "QNJDxdfRVCTHgfyE",
+      url: "stun:stun.l.google.com:19302",
     },
     {
-      urls: "turn:a.relay.metered.ca:80?transport=tcp",
-      username: "8ccd5fdaa7a9c88887a05445",
-      credential: "QNJDxdfRVCTHgfyE",
+      url: "stun:stun1.l.google.com:19302",
     },
     {
-      urls: "turn:a.relay.metered.ca:443",
-      username: "8ccd5fdaa7a9c88887a05445",
-      credential: "QNJDxdfRVCTHgfyE",
+      url: "stun:stun2.l.google.com:19302",
     },
     {
-      urls: "turn:a.relay.metered.ca:443?transport=tcp",
-      username: "8ccd5fdaa7a9c88887a05445",
-      credential: "QNJDxdfRVCTHgfyE",
+      url: "stun:stun3.l.google.com:19302",
+    },
+    {
+      url: "stun:stun4.l.google.com:19302",
+    },
+    {
+      url: "stun:stun.l.google.com:19305",
+    },
+    {
+      url: "stun:stun1.l.google.com:19305",
+    },
+    {
+      url: "stun:stun2.l.google.com:19305",
+    },
+    {
+      url: "stun:stun3.l.google.com:19305",
+    },
+    {
+      url: "stun:stun4.l.google.com:19305",
     },
   ],
   iceCandidatePoolSize: 10,
