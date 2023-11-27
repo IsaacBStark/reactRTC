@@ -30,34 +30,34 @@ const firestore = getFirestore(app);
 const servers = {
   iceServers: [
     {
-      url: "stun:stun.l.google.com:19302",
+      urls: "stun:stun.l.google.com:19302",
     },
     {
-      url: "stun:stun1.l.google.com:19302",
+      urls: "stun:stun1.l.google.com:19302",
     },
     {
-      url: "stun:stun2.l.google.com:19302",
+      urls: "stun:stun2.l.google.com:19302",
     },
     {
-      url: "stun:stun3.l.google.com:19302",
+      urls: "stun:stun3.l.google.com:19302",
     },
     {
-      url: "stun:stun4.l.google.com:19302",
+      urls: "stun:stun4.l.google.com:19302",
     },
     {
-      url: "stun:stun.l.google.com:19305",
+      urls: "stun:stun.l.google.com:19305",
     },
     {
-      url: "stun:stun1.l.google.com:19305",
+      urls: "stun:stun1.l.google.com:19305",
     },
     {
-      url: "stun:stun2.l.google.com:19305",
+      urls: "stun:stun2.l.google.com:19305",
     },
     {
-      url: "stun:stun3.l.google.com:19305",
+      urls: "stun:stun3.l.google.com:19305",
     },
     {
-      url: "stun:stun4.l.google.com:19305",
+      urls: "stun:stun4.l.google.com:19305",
     },
   ],
   iceCandidatePoolSize: 10,
@@ -121,7 +121,6 @@ export default function App() {
         await setDoc(doc(firestore, `calls/${callId}`), { offer });
 
         onSnapshot(query(doc(firestore, `calls/${callId}`)), (snap) => {
-          console.log("help");
           const data = snap.data();
 
           !pc.currentRemoteDescription &&
@@ -134,7 +133,6 @@ export default function App() {
             change.type === "added" &&
               pc.addIceCandidate(new RTCIceCandidate(change.doc.data()));
           });
-          console.log(pc);
         });
       } else if (calling && callNumber) {
         const call = doc(firestore, `calls/${callNumber}`);
@@ -194,7 +192,6 @@ export default function App() {
   }, []);
 
   pc.ontrack = (e) => {
-    console.log(e);
     e.streams[0].getTracks().forEach((track) => {
       remoteStream.addTrack(track, localStream);
     });
@@ -203,9 +200,7 @@ export default function App() {
   useEffect(() => {
     localStream &&
       localStream.getTracks().forEach((track) => {
-        console.log(localStream.getTracks());
         pc.addTrack(track, remoteStream);
-        console.log(pc);
       });
   }, [localStream]);
 
@@ -306,6 +301,7 @@ function Video({ onClick, source, className }) {
       autoPlay={true}
       onClick={onClick}
       className={className}
+      playsInline
     />
   );
 }
