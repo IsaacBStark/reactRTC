@@ -30,12 +30,6 @@ const firestore = getFirestore(app);
 const servers = {
   iceServers: [
     {
-      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
-    },
-    {
-      urls: "stun:stun.relay.metered.ca:80",
-    },
-    {
       urls: "turn:a.relay.metered.ca:80",
       username: "8ccd5fdaa7a9c88887a05445",
       credential: "QNJDxdfRVCTHgfyE",
