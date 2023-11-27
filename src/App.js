@@ -146,7 +146,7 @@ export default function App() {
     useEffect(() => {
         localStream && localStream.getTracks().forEach((track) => {
             console.log(localStream.getTracks());
-            pc.addTrack(track)
+            pc.addTrack(track, remoteStream)
             console.log(pc)
         })
     }, [localStream])
