@@ -20,7 +20,7 @@ const firestore = getFirestore(app);
 const servers = {
     iceServers: [
         {
-            urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'], // free stun server
+            urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
         },
     ],
     iceCandidatePoolSize: 10,
@@ -30,10 +30,10 @@ const pc = new RTCPeerConnection(servers);
 
 export default function App() {
     const [localStream, setLocalStream] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(new MediaStream());
     const [muted, setMuted] = useState(false);
     const [calling, setCalling] = useState(false);
-    const [callNumber, setCallNumber] = useState(null);
+    const [callNumber, setCallNumber] = useState();
 
     function handleVideoClick(source) {
         source && source.getVideoTracks().forEach((track) => {
@@ -78,16 +78,17 @@ export default function App() {
                 await setDoc(doc(firestore, `calls/${callId}`), { offer });
 
                 onSnapshot(query(doc(firestore, `calls/${callId}`)), snap => {
-                    console.log("snap", snap)
+                    console.log('help')
                     const data = snap.data();
 
-                        (!pc.currentRemoteDescription && data.answer) && pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+                    (!pc.currentRemoteDescription && data.answer) && pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+                })
 
-                    onSnapshot(answerCandidates ,snap => {
-                        snap.docChanges().forEach(change => {
-                            change.type === 'added' && pc.addIceCandidate(new RTCIceCandidate(change.doc.data()))
-                        })
+                onSnapshot(answerCandidates, snap => {
+                    snap.docChanges().forEach(change => {
+                        change.type === 'added' && pc.addIceCandidate(new RTCIceCandidate(change.doc.data()))
                     })
+                    console.log(pc)
                 })
 
             } else if (calling && callNumber) {
@@ -133,24 +134,22 @@ export default function App() {
             )
         }
         getCam();
-
-        async function getRemote() {
-            setRemoteStream(new MediaStream())
-        }
-        getRemote();
     }, [])
+
+    pc.ontrack = e => {
+        console.log(e)
+        e.streams[0].getTracks().forEach((track) => {
+            remoteStream.addTrack(track, localStream);
+        })
+    }
 
     useEffect(() => {
         localStream && localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream)
+            console.log(localStream.getTracks());
+            pc.addTrack(track)
+            console.log(pc)
         })
-        pc.ontrack = event => {
-            event.streams[0].getTracks(track => {
-                remoteStream.addTrack(track)
-            })
-        }
     }, [localStream])
-
 
 
     return (
