@@ -67,6 +67,8 @@ export default function App() {
   }
 
   function handleCallClick() {
+    pc.close();
+    pc.removeEventListener("icecandidate");
     setCalling(!calling);
   }
 
