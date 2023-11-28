@@ -30,34 +30,14 @@ const firestore = getFirestore(app);
 const servers = {
   iceServers: [
     {
-      urls: "stun:stun.l.google.com:19302",
-    },
-    {
-      urls: "stun:stun1.l.google.com:19302",
-    },
-    {
-      urls: "stun:stun2.l.google.com:19302",
-    },
-    {
-      urls: "stun:stun3.l.google.com:19302",
-    },
-    {
-      urls: "stun:stun4.l.google.com:19302",
-    },
-    {
-      urls: "stun:stun.l.google.com:19305",
-    },
-    {
-      urls: "stun:stun1.l.google.com:19305",
-    },
-    {
-      urls: "stun:stun2.l.google.com:19305",
-    },
-    {
-      urls: "stun:stun3.l.google.com:19305",
-    },
-    {
-      urls: "stun:stun4.l.google.com:19305",
+      urls: [
+        "stun:136.36.160.162:3478",
+        "stun:136.36.160.162:3479",
+        "turn:136.36.160.162:3478",
+        "turn:136.36.160.162:3479",
+      ],
+      username: "test",
+      credential: "test",
     },
   ],
   iceCandidatePoolSize: 10,
