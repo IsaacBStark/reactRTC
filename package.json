@@ -26,7 +26,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
-    "start": "webpack --config webpack.dev.js serve --open",
+    "start": "webpack serve --open --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   }
 }
