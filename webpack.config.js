@@ -1,9 +1,7 @@
 const path = require("path");
-const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/index.js",
-  mode: "development",
   module: {
     rules: [
       {
@@ -21,12 +19,12 @@ module.exports = {
       {
         test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
         include: path.resolve(__dirname, 'src'),
-        type: "asset/resource",
+        type: "asset/inline",
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         include: path.resolve(__dirname, 'src'),
-        type: "asset/resource",
+        type: "asset/inline",
       },
     ],
   },
@@ -37,17 +35,4 @@ module.exports = {
     filename: "bundle.js",
     clean: true,
   },
-  devtool: 'inline-source-map',
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "/"),
-    },
-    compress: false,
-    port: 3000,
-  },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
-  // optimization: {
-  //   mangleExports: "size",
-  //   minimize: true,
-  // },
 };
