@@ -6,6 +6,7 @@ const config = require('./webpack.config.js')
 module.exports = merge(config, {
   mode: "development",
   devServer: {
+    historyApiFallback: true,
     static: {
       directory: path.join(__dirname, "/"),
     },

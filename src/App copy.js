@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { Input, Button } from "@nextui-org/react";
 import { RiMicFill, RiMicOffFill, RiPhoneFill } from "react-icons/ri";
 import {
-    getFirestore,
     collection,
     addDoc,
     setDoc,
@@ -13,39 +12,8 @@ import {
     query,
     onSnapshot,
 } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBwtjRg_B-YEG7VgU81DgTX4opF_SO6ERI",
-    authDomain: "fir-rtc-cd34d.firebaseapp.com",
-    projectId: "fir-rtc-cd34d",
-    storageBucket: "fir-rtc-cd34d.appspot.com",
-    messagingSenderId: "1087318654356",
-    appId: "1:1087318654356:web:d18fc9f70b2d42a4c8a381",
-};
-
-const app = initializeApp(firebaseConfig);
-
-const firestore = getFirestore(app);
-
-const servers = {
-    iceServers: [
-        {
-            urls: [
-                "stun:136.36.160.162:3478",
-                "turn:136.36.160.162:3478",
-            ],
-            username: "test",
-            credential: "test",
-        },
-    ],
-    iceCandidatePoolSize: 10,
-};
 
 export default function App() {
-    const [localStream, setLocalStream] = useState(null);
-    const [localCam, setLocalCam] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(new MediaStream());
     const [muted, setMuted] = useState(false);
     const [calling, setCalling] = useState(false);
     const [callNumber, setCallNumber] = useState();
@@ -85,7 +53,6 @@ export default function App() {
     useEffect(() => {
         async function callHandling() {
             if (calling && !callNumber) {
-                const callId = Math.floor(Math.random() * 9999);
                 setCallNumber(callId);
 
                 setDoc(doc(firestore, `calls/${callId}`), {});
@@ -179,11 +146,6 @@ export default function App() {
                     video: { facingMode: "user" },
                 })
             );
-            setLocalCam(
-                await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "user" },
-                })
-            );
         }
         getCam();
     }, []);
@@ -194,10 +156,6 @@ export default function App() {
             remoteStream.addTrack(track, localStream);
         });
     };
-
-    // useEffect(() => {
-
-    // }, [localStream]);
 
     return (
         <Shell>
@@ -266,37 +224,5 @@ export default function App() {
                 </div>
             </div>
         </Shell>
-    );
-}
-
-function Video({ onClick, source, className }) {
-    const sourceRef = useRef(source);
-
-    useEffect(() => {
-        return function cleanup() {
-            sourceRef.current.getTracks().forEach((track) => {
-                track.stop();
-            });
-        };
-    }, []);
-
-    useEffect(() => {
-        sourceRef.current = source;
-    }, [source]);
-
-    const refVideo = useCallback(
-        (video) => {
-            if (video) video.srcObject = source;
-        },
-        [source]
-    );
-    return (
-        <video
-            ref={refVideo}
-            autoPlay={true}
-            onClick={onClick}
-            className={className}
-            playsInline
-        />
     );
 }
