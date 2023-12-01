@@ -67,11 +67,17 @@ export default function App() {
 
     function handleCallClick() {
         if (calling) {
-            setRemoteStream(null);
             peerConnection.close();
             setPeerConnection(null)
             setPeerConnection(new RTCPeerConnection(servers));
             peerConnection.restartIce();
+            setCallNumber(null);
+        } else if (!calling) {
+            if (localStream) {
+                localStream.getTracks().forEach((track) => {
+                    peerConnection.addTrack(track, remoteStream);
+                });
+            }
         }
         setCalling(!calling);
     }
@@ -189,15 +195,9 @@ export default function App() {
         });
     };
 
-    useEffect(() => {
-        if (localStream) {
-            console.log('help')
-            localStream.getTracks().forEach((track) => {
-                peerConnection.addTrack(track, remoteStream);
-            });
-            console.log(peerConnection)
-        }
-    }, [localStream]);
+    // useEffect(() => {
+
+    // }, [localStream]);
 
     return (
         <Shell>
