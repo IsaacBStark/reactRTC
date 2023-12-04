@@ -1,6 +1,16 @@
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useRef } from 'react';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    onSnapshot,
+    query,
+    setDoc,
+    updateDoc,
+} from "firebase/firestore";
 
 const callInfo = createContext();
 
@@ -36,12 +46,98 @@ const servers = {
 };
 
 export function CallInfoProvider({ children }) {
-    const [roomNumber, setRoomNumber] = useState(null);
+    const roomNumber = useRef(null);
+    const [displayNumber, setDisplayNumber] = useState(null);
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
-    const [side, setSide] = useState(null);
+
+    async function offer() {
+        const roomId = Math.floor(Math.random() * 9999);
+        roomNumber.current = roomId;
+        setDisplayNumber(roomId)
+        setDoc(doc(firestore, `calls/${roomNumber.current}`), {});
+        const offerCandidates = collection(
+            firestore,
+            `calls/${roomNumber.current}/offerCandidates`
+        );
+        const answerCandidates = collection(
+            firestore,
+            `calls/${roomNumber.current}/answerCandidates`
+        );
+    
+        peerConnection.onicecandidate = (e) => {
+            e.candidate && addDoc(offerCandidates, e.candidate.toJSON());
+        };
+    
+        const offerDescription = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offerDescription);
+    
+        const offer = {
+            sdp: offerDescription.sdp,
+            type: offerDescription.type,
+        };
+    
+        await setDoc(doc(firestore, `calls/${roomNumber.current}`), { offer });
+    
+        onSnapshot(query(doc(firestore, `calls/${roomNumber.current}`)), (snap) => {
+            const data = snap.data();
+    
+            !peerConnection.currentRemoteDescription &&
+                data.answer &&
+                peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        });
+    
+        onSnapshot(answerCandidates, (snap) => {
+            snap.docChanges().forEach((change) => {
+                change.type === "added" &&
+                    peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+            });
+        });
+    }
+    
+    async function answer() {
+        const call = doc(firestore, `calls/${roomNumber.current}`);
+        const offerCandidates = collection(
+            firestore,
+            `calls/${roomNumber.current}/offerCandidates`
+        );
+        const answerCandidates = collection(
+            firestore,
+            `calls/${roomNumber.current}/answerCandidates`
+        );
+    
+        peerConnection.onicecandidate = (e) => {
+            e.candidate && addDoc(answerCandidates, e.candidate.toJSON());
+        };
+    
+        const callData = (await getDoc(call)).data();
+    
+        const offerDescription = callData.offer;
+        await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(offerDescription)
+        );
+    
+        const answerDescription = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(
+            new RTCSessionDescription(answerDescription)
+        );
+    
+        const answer = {
+            sdp: answerDescription.sdp,
+            type: answerDescription.type,
+        };
+    
+        await updateDoc(call, { answer });
+    
+        onSnapshot(offerCandidates, (snap) => {
+            snap.docChanges().forEach((change) => {
+                change.type === "added" &&
+                    peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+            });
+        });
+    }
 
     return (
-        <callInfo.Provider value={{ roomNumber, setRoomNumber, peerConnection, setPeerConnection }}>
+        <callInfo.Provider value={{ roomNumber, displayNumber, peerConnection, setPeerConnection, firestore, offer, answer }}>
             {children}
         </callInfo.Provider>
     )

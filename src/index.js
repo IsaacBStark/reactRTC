@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { NextUIProvider } from "@nextui-org/react";
 import { CallInfoProvider } from "./components/CallInfo.jsx";
-import { createBrowserRouter, Router, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Shell } from "./components/Shell.jsx";
 import { Call, Landing, Error } from "./pages/";
 import './styles/styles.css';
