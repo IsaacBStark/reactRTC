@@ -46,6 +46,7 @@ const servers = {
 };
 
 export function CallInfoProvider({ children }) {
+    // TODO: Reducer
     const roomNumber = useRef(null);
     const [displayNumber, setDisplayNumber] = useState(null);
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));

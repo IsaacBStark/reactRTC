@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { Video } from '../components/Video';
 import { useCallInfo } from '../components';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { Button } from '@nextui-org/react';
 import { RiMicFill, RiMicOffFill, RiPhoneFill } from 'react-icons/ri';
 
 export function Call() {
+    //I want to use a reducer here, but all but one of these are objects that I'm modifying. No point in using a reducer to toggle a single boolean.
     const [localStream, setLocalStream] = useState(null);
     const [localCam, setLocalCam] = useState(null);
     const [remoteStream, setRemoteStream] = useState(new MediaStream());
