@@ -10,7 +10,7 @@ export function Call() {
     const [localCam, setLocalCam] = useState(null);
     const [remoteStream, setRemoteStream] = useState(new MediaStream());
     const [muted, setMuted] = useState(false);
-    const { roomNumber, setDisplayNumber, peerConnection, setPeerConnection, side, offer, answer, servers } = useCallInfo();
+    const { roomNumber, peerConnection, setPeerConnection, offer, answer, servers, state, dispatch } = useCallInfo();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,16 +35,16 @@ export function Call() {
             )
         }
         getCam().then(() => {
-            if (side === 'offer') {
+            if (state.side === 'offer') {
                 offer()
-            } else if (side === 'answer') {
+            } else if (state.side === 'answer') {
                 answer();
             }
         });
 
         return () => {
             roomNumber.current = null;
-            setDisplayNumber(null)
+            dispatch({type: 'setDisplay', payload: null})
         };
     }, [])
 
@@ -76,7 +76,7 @@ export function Call() {
         setPeerConnection(new RTCPeerConnection(servers));
         peerConnection.restartIce();
         roomNumber.current = null;
-        setDisplayNumber(null);
+        dispatch({type: 'setDisplay', payload: null})
         navigate('/reactRTC');
     }
 

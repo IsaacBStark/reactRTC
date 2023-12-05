@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useRef } from 'react';
+import { useState, createContext, useContext, useRef, useReducer } from 'react';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 import {
@@ -46,16 +46,14 @@ const servers = {
 };
 
 export function CallInfoProvider({ children }) {
-    // TODO: Reducer
+    const [state, dispatch] = useReducer(reducer, {displayNumber: null, side: null});
     const roomNumber = useRef(null);
-    const [displayNumber, setDisplayNumber] = useState(null);
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
-    const [side, setSide] = useState(null);
 
     async function offer() {
         const roomId = Math.floor(Math.random() * 9999);
         roomNumber.current = roomId;
-        setDisplayNumber(roomId)
+        dispatch({type: 'setDisplay', payload: roomId});
         setDoc(doc(firestore, `calls/${roomNumber.current}`), {});
         const offerCandidates = collection(
             firestore,
@@ -97,7 +95,7 @@ export function CallInfoProvider({ children }) {
     }
 
     async function answer() {
-        setDisplayNumber(roomNumber.current)
+        dispatch({type: 'setDisplay', action: roomNumber.current});
         const call = doc(firestore, `calls/${roomNumber.current}`);
         const offerCandidates = collection(
             firestore,
@@ -140,8 +138,18 @@ export function CallInfoProvider({ children }) {
     }
 
     return (
-        <callInfo.Provider value={{ roomNumber, displayNumber, setDisplayNumber, peerConnection, setPeerConnection, firestore, offer, answer, side, setSide, servers }}>
+        <callInfo.Provider value={{ roomNumber, peerConnection, setPeerConnection, firestore, offer, answer, servers, state, dispatch }}>
             {children}
         </callInfo.Provider>
     )
+}
+
+function reducer(state, action) {
+    switch(action.type) {
+        case 'setDisplay':
+            return {...state, displayNumber: action.payload};
+
+        case 'setSide':
+            return {...state, side: action.payload};
+    }
 }
