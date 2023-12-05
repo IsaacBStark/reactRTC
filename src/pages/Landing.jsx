@@ -4,16 +4,16 @@ import { useNavigate } from "react-router-dom";
 
 export function Landing() {
     const navigate = useNavigate();
-    const { offer, answer } = useCallInfo();
+    const { offer, answer, setSide } = useCallInfo();
 
     function handleJoin() {
-        navigate('/call')
-        answer();
+        navigate('/call');
+        setSide('answer');
     }
 
     function handleCreate() {
         navigate('/call');
-        offer();
+        setSide('offer');
     }
 
     return (

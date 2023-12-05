@@ -1,5 +1,4 @@
 import { createRoot } from "react-dom/client";
-import { NextUIProvider } from "@nextui-org/react";
 import { CallInfoProvider } from "./components/CallInfo.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Shell } from "./components/Shell.jsx";
@@ -12,9 +11,9 @@ const router = createBrowserRouter([
         element: <Shell />,
         errorElement: <Error />,
         children: [
-            {index: true, element: <Landing />},
+            { index: true, element: <Landing /> },
             {
-                path: 'call/',
+                path: 'call',
                 element: <Call />,
             }
         ]
@@ -23,8 +22,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
     <CallInfoProvider>
-        <NextUIProvider>
-            <RouterProvider router={router} />
-        </NextUIProvider>
+        <RouterProvider router={router} />
     </CallInfoProvider>
 );

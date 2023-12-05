@@ -49,6 +49,7 @@ export function CallInfoProvider({ children }) {
     const roomNumber = useRef(null);
     const [displayNumber, setDisplayNumber] = useState(null);
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
+    const [side, setSide] = useState(null);
 
     async function offer() {
         const roomId = Math.floor(Math.random() * 9999);
@@ -63,29 +64,29 @@ export function CallInfoProvider({ children }) {
             firestore,
             `calls/${roomNumber.current}/answerCandidates`
         );
-    
+
         peerConnection.onicecandidate = (e) => {
             e.candidate && addDoc(offerCandidates, e.candidate.toJSON());
         };
-    
+
         const offerDescription = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offerDescription);
-    
+
         const offer = {
             sdp: offerDescription.sdp,
             type: offerDescription.type,
         };
-    
+
         await setDoc(doc(firestore, `calls/${roomNumber.current}`), { offer });
-    
+
         onSnapshot(query(doc(firestore, `calls/${roomNumber.current}`)), (snap) => {
             const data = snap.data();
-    
+
             !peerConnection.currentRemoteDescription &&
                 data.answer &&
                 peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
         });
-    
+
         onSnapshot(answerCandidates, (snap) => {
             snap.docChanges().forEach((change) => {
                 change.type === "added" &&
@@ -93,8 +94,9 @@ export function CallInfoProvider({ children }) {
             });
         });
     }
-    
+
     async function answer() {
+        setDisplayNumber(roomNumber.current)
         const call = doc(firestore, `calls/${roomNumber.current}`);
         const offerCandidates = collection(
             firestore,
@@ -104,30 +106,30 @@ export function CallInfoProvider({ children }) {
             firestore,
             `calls/${roomNumber.current}/answerCandidates`
         );
-    
+
         peerConnection.onicecandidate = (e) => {
             e.candidate && addDoc(answerCandidates, e.candidate.toJSON());
         };
-    
+
         const callData = (await getDoc(call)).data();
-    
+
         const offerDescription = callData.offer;
         await peerConnection.setRemoteDescription(
             new RTCSessionDescription(offerDescription)
         );
-    
+
         const answerDescription = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(
             new RTCSessionDescription(answerDescription)
         );
-    
+
         const answer = {
             sdp: answerDescription.sdp,
             type: answerDescription.type,
         };
-    
+
         await updateDoc(call, { answer });
-    
+
         onSnapshot(offerCandidates, (snap) => {
             snap.docChanges().forEach((change) => {
                 change.type === "added" &&
@@ -137,7 +139,7 @@ export function CallInfoProvider({ children }) {
     }
 
     return (
-        <callInfo.Provider value={{ roomNumber, displayNumber, peerConnection, setPeerConnection, firestore, offer, answer }}>
+        <callInfo.Provider value={{ roomNumber, displayNumber, setDisplayNumber, peerConnection, setPeerConnection, firestore, offer, answer, side, setSide, servers }}>
             {children}
         </callInfo.Provider>
     )
