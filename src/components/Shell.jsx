@@ -3,7 +3,7 @@ import { useCallInfo } from "./CallInfo"
 import { Outlet } from "react-router-dom";
 
 export function Shell() {
-    const { roomNumber, displayNumber } = useCallInfo();
+    const { displayNumber } = useCallInfo();
 
     return (
         <div id='shell' className='w-full h-full flex flex-col p-4 relative'>

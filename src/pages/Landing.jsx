@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export function Landing() {
     const navigate = useNavigate();
-    const { offer, answer, setSide } = useCallInfo();
+    const { setSide } = useCallInfo();
 
     function handleJoin() {
         navigate('/reactRTC/call');

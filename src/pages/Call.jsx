@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Video } from '../components/Video';
 import { useCallInfo } from '../components';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { Button } from '@nextui-org/react';
 import { RiMicFill, RiMicOffFill, RiPhoneFill } from 'react-icons/ri';
 
 export function Call() {
-    //I want to use a reducer here, but all but one of these are objects that I'm modifying. No point in using a reducer to toggle a single boolean.
     const [localStream, setLocalStream] = useState(null);
     const [localCam, setLocalCam] = useState(null);
     const [remoteStream, setRemoteStream] = useState(new MediaStream());
@@ -84,7 +83,7 @@ export function Call() {
     if (roomNumber.current) {
         return (
             <div className='h-full p-2 flex justify-center'>
-                <div className='relative'>
+                <div className='relative h-5/6 max-w-fit'>
                     {/* local */}
                     <Video source={localCam} onClick={handleLocalClick} className='bg-black object-cover absolute bottom-4 right-4 w-1/3 sm:w-1/4 md:w-1/5 z-[1]' />
                     <div className='flex absolute bottom-4 left-4 gap-x-4 z-10'>
@@ -118,7 +117,7 @@ export function Call() {
                         </Button>
                     </div>
                     {/* remote */}
-                    <Video source={remoteStream} className='bg-black h-full object-contain w-full aspect-video' />
+                    <Video source={remoteStream} className='bg-black object-contain h-full aspect-video w-full' />
                 </div>
             </div>
         )
