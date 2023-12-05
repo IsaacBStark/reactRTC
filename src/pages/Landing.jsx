@@ -7,12 +7,12 @@ export function Landing() {
     const { offer, answer, setSide } = useCallInfo();
 
     function handleJoin() {
-        navigate('/call');
+        navigate('/reactRTC/call');
         setSide('answer');
     }
 
     function handleCreate() {
-        navigate('/call');
+        navigate('/reactRTC/call');
         setSide('offer');
     }
 

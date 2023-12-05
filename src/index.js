@@ -7,13 +7,13 @@ import './styles/styles.css';
 
 const router = createBrowserRouter([
     {
-        path: '/',
+        path: '/reactRTC',
         element: <Shell />,
         errorElement: <Error />,
         children: [
             { index: true, element: <Landing /> },
             {
-                path: 'call',
+                path: '/reactRTC/call',
                 element: <Call />,
             }
         ]
