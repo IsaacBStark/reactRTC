@@ -77,16 +77,16 @@ export function Call() {
         peerConnection.restartIce();
         roomNumber.current = null;
         setDisplayNumber(null);
-        navigate('/');
+        navigate('/reactRTC');
     }
 
     if (roomNumber.current) {
         return (
             <div className='h-full p-2 flex justify-center'>
-                <div className='relative aspect-video'>
+                <div className='relative'>
                     {/* local */}
                     <Video source={localCam} onClick={handleLocalClick} className='bg-black object-cover absolute bottom-4 right-4 w-1/3 sm:w-1/4 md:w-1/5 z-[1]' />
-                    <div className='flex absolute bottom-4 left-4 gap-x-4'>
+                    <div className='flex absolute bottom-4 left-4 gap-x-4 z-10'>
                         <Button
                             onClick={handleHangup}
                             isIconOnly
@@ -117,7 +117,7 @@ export function Call() {
                         </Button>
                     </div>
                     {/* remote */}
-                    <Video source={remoteStream} className='bg-black h-full object-contain w-full' />
+                    <Video source={remoteStream} className='bg-black h-full object-contain w-full aspect-video' />
                 </div>
             </div>
         )
